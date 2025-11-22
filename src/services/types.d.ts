@@ -1,0 +1,3 @@
+type ICount = {
+  count: number;
+};
