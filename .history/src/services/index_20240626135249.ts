@@ -27,7 +27,7 @@ import BannerService from "./BannerService";
 import FavoriteService from "./FavoriteService";
 import GeneralNotificaitionGalleryService from "./GeneralNotificationGalleryService";
 import PurchaseService from "./PurchaseService";
-import LifetimeSmsApiService from "./LifetimeSmsApiService";
+import LifetimeSmsApiService from "./LifeTimeSmsApiService";
 export {
   AdminService,
   AddressService,
