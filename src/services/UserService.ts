@@ -46,7 +46,7 @@ export default class UserService extends BaseService<User> {
         success: false,
       };
     }
-  }
+  } 
 
   public async registerOrLogin(body: any): Promise<IReturnData<User>> {
     try {

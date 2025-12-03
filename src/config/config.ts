@@ -44,9 +44,9 @@ const SERVER = {
   port: SERVER_PORT,
 };
 
-const SMS_API_SECRET = process.env.SMS_API_SECRET;
-const SMS_API_TOKEN = process.env.SMS_API_TOKEN;
-
+const SMS_API_SECRET = "xperia_tech_team";
+const SMS_API_TOKEN = "7c173e2d2b62c4b07dac0875f41db678f76d972832";
+ 
 const config = {
   server: SERVER,
   mongo: MONGO,

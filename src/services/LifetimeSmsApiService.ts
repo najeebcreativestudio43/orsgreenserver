@@ -8,10 +8,12 @@ export default class LifetimeSmsApiService {
     otp: string
   ): Promise<AxiosResponse<any, any>> {
     const from = 8584;
+    const eventId = 86;
     const SECRET = config.SMS_API_SECRET;
     const TOKEN = config.SMS_API_TOKEN;
-    const message = `Your HunzaTrader O T P is ${otp}. Kindly do not share your O T P with any other person`;
-    const url = `https://lifetimesms.com/plain?api_token=${TOKEN}&api_secret=${SECRET}&to=${to}&from=${from}&message=${message}`;
+    const message = `Your Oragreen O T P is ${otp}. Kindly do not share your O T P with any other person`;
+    
+    const url = `https://lifetimesms.com/otp?api_token=${TOKEN}&api_secret=${SECRET}&to=${to}&from=${from}&event_id=${eventId}&message=${message}&data={"code":${otp}}`;
     const result = await axios.get(url);
     return result;
     //   .then((response) => {

@@ -28,7 +28,7 @@ export default class UserController extends CRUDController<User, UserService> {
       description: "register new user",
     },
     {
-      path: "/:id",
+      path: "/:id", 
       method: Methods.PUT,
       handler: this.updateUser,
       localMiddleware: [
