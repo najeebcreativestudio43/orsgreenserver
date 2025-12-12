@@ -128,16 +128,36 @@ export default class UserService extends BaseService<User> {
     try {
       const { email, password, name, phone } = body;
 
-      const existingUser = await UserModel.findOne({ email });
-      if (existingUser) {
+      // Validate required fields
+      if (!email || !password || !name || !phone) {
+        return {
+          message: "Email, password, name, and phone are required",
+          success: false,
+        };
+      }
+
+      // Check email exists
+      const existingEmail = await UserModel.findOne({ email });
+      if (existingEmail) {
         return {
           message: "Email already registered",
           success: false,
         };
       }
 
+      // Check phone exists
+      const existingPhone = await UserModel.findOne({ mobile: phone });
+      if (existingPhone) {
+        return {
+          message: "Phone number already registered",
+          success: false,
+        };
+      }
+
+      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // Create user
       const newUser = await UserModel.create({
         ...body,
         password: hashedPassword,
