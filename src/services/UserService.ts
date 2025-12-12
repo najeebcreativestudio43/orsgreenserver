@@ -46,11 +46,10 @@ export default class UserService extends BaseService<User> {
         success: false,
       };
     }
-  } 
+  }
 
   public async registerOrLogin(body: any): Promise<IReturnData<User>> {
     try {
-      console.log("register login body", body);
       const user = await UserModel.findByMobile(body.mobile);
       console.log("found user", user);
       if (user) {
@@ -120,6 +119,151 @@ export default class UserService extends BaseService<User> {
     } catch (err) {
       return {
         message: "An error , accord while verifying phone otp try again",
+        success: false,
+      };
+    }
+  }
+
+  public async registerWithEmail(body: any): Promise<IReturnData<User>> {
+    try {
+      const { email, password, name, phone } = body;
+
+      const existingUser = await UserModel.findOne({ email });
+      if (existingUser) {
+        return {
+          message: "Email already registered",
+          success: false,
+        };
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = await UserModel.create({
+        ...body,
+        password: hashedPassword,
+        firstName: name,
+        lastName: name,
+        mobile: phone,
+      });
+
+      return {
+        message: "Account created successfully",
+        success: true,
+        data: newUser,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        message: "Unable to register user",
+        success: false,
+      };
+    }
+  }
+
+  /////////////
+  // *****?
+  public async loginWithEmail(body: any): Promise<IReturnData<ISafeData>> {
+    try {
+      const { email, password } = body;
+
+      const user: any = await UserModel.findOne({ email });
+      if (!user) {
+        return {
+          message: "Email not found",
+          success: false,
+        };
+      }
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return {
+          message: "Invalid password",
+          success: false,
+        };
+      }
+
+      user.lastLogin = Date.now();
+      await user.save();
+
+      return {
+        message: "Login successful",
+        success: true,
+        data: this.prepareData(user),
+      };
+    } catch (err) {
+      console.log(err, "errvas");
+      return {
+        message: "Unable to login",
+        success: false,
+      };
+    }
+  }
+
+  /////////////
+  // *****?
+  public async forgotPassword(body: any): Promise<IReturnData<User>> {
+    try {
+      const { email } = body;
+
+      const user: any = await UserModel.findOne({ email });
+      if (!user) {
+        return {
+          message: "User not found",
+          success: false,
+        };
+      }
+
+      const otp = Utils.generateOTP();
+      user.phoneOtp = otp;
+      await user.save();
+
+      const responsemail = await EmailService.sendEmail(email, otp);
+      return {
+        message: "OTP sent to email",
+        success: true,
+      };
+    } catch (err) {
+      return {
+        message: "Unable to send OTP",
+        success: false,
+      };
+    }
+  }
+
+  /////////////
+  // *****?
+  public async resetPassword(body: any): Promise<IReturnData<User>> {
+    try {
+      const { email, otp, newPassword } = body;
+
+      const user: any = await UserModel.findOne({ email });
+      if (!user) {
+        return {
+          message: "User not found",
+          success: false,
+        };
+      }
+
+      if (user.phoneOtp !== otp) {
+        return {
+          message: "Invalid OTP",
+          success: false,
+        };
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = hashedPassword;
+      user.phoneOtp = "";
+      await user.save();
+
+      return {
+        message: "Password reset successful",
+        success: true,
+        data: user,
+      };
+    } catch (err) {
+      return {
+        message: "Unable to reset password",
         success: false,
       };
     }

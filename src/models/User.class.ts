@@ -44,6 +44,9 @@ class User {
   @Property({ type: () => String })
   public middleName?: string;
 
+  @Property({ type: () => String })
+  public password?: string;
+
   @Property({ type: () => String, required: true })
   public mobile!: string;
 

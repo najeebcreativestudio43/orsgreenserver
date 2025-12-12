@@ -20,13 +20,13 @@ export default class EmailController extends Controller {
     next: NextFunction
   ): Promise<void> {
     try {
-      const data = await EmailService.sendEmail(req.body.email);
+      const data = await EmailService.sendEmail(req.body.email, req.body.otp);
       if (data.success) {
         super.sendSuccess(res, data.data, data.message);
       } else {
         super.sendError(res, data.message);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       super.sendError(res, err.message);
     }

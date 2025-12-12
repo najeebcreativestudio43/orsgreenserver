@@ -12,7 +12,7 @@ export default class ApiBannerController extends Controller {
       handler: this.findAllBanners,
       localMiddleware: [Token.verifyApiKey],
     },
-  ];
+  ]; 
 
   async findAllBanners(
     req: Request,

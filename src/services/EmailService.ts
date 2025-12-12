@@ -5,27 +5,32 @@ import Utils from "./../Utils/Utils";
 import { IReturnData } from "./../base";
 import UserService from "./UserService";
 export default class EmailService {
-  public static async sendEmail(email: string): Promise<IReturnData<object>> {
+  public static async sendEmail(
+    email: string,
+    otp: string
+  ): Promise<IReturnData<object>> {
     try {
       const service = new UserService();
       const user = await service._collection?.findOne({ email });
 
       if (user) {
-        const data = await this.send(email);
+        const data = await this.send(email, otp);
         return data;
       } else {
         return { success: false, message: "Invalid email" };
       }
     } catch (err) {
       return {
-        message:
-          "Some thing went wrong while sending email verfication. try again!",
+        message: `Some thing went wrong while sending email verfication. try again! ${err}`,
         success: true,
       };
     }
   }
 
-  public static async send(email: string): Promise<IReturnData<object>> {
+  public static async send(
+    email: string,
+    otp: string
+  ): Promise<IReturnData<object>> {
     try {
       // create reusable transporter object using the default SMTP transport
       const transporter = nodemailer.createTransport(
@@ -43,11 +48,11 @@ export default class EmailService {
 
       // send mail with defined transport object
       let info = await transporter.sendMail({
-        from: `"Pet Mark 👻" <${config.gmail.user}>`, // sender address
+        from: `"Oragreen" <${config.gmail.user}>`, // sender address
         to: email, // list of receivers
-        subject: "[Pet Mark] Verify your email", // Subject line
-        text: `Verification code!\n\n\nTo verify this email address belongs to you, enter the code below on the email verification page. \n\n\\n <strong>Code: ${code}</strong>`, // plain text body
-        html: this.getEmailTemplate(code), // html body
+        subject: "Oragreen Verify your email", // Subject line
+        text: `Verification code!\n\n\nTo verify this email address belongs to you, enter the code below on the email verification page. \n\n\\n <strong>Code: ${otp}</strong>`, // plain text body
+        html: this.getEmailTemplate(otp), // html body
       });
 
       console.log("Message sent: %s", info.messageId);
@@ -63,6 +68,8 @@ export default class EmailService {
         },
       };
     } catch (err) {
+      console.log(err, "errva");
+
       return {
         message:
           "Some thing went wrong while sending email verfication. try again!",
@@ -89,10 +96,10 @@ export default class EmailService {
 
       // send mail with defined transport object
       let info = await transporter.sendMail({
-        from: `"Pet Mark 👻" <${config.gmail.user}>`, // sender address
+        from: `"OraGreen 👻" <${config.gmail.user}>`, // sender address
         to: email, // list of receivers
-        subject: "[Pet Mark] Password Changed", // Subject line
-        text: `You've got your self a new password!\n\n\nThe password for the [Pet Mark] account ${email} was just changed. If this was you, then you can safly ignore this message.`, // plain text body
+        subject: "[OraGreen] Password Changed", // Subject line
+        text: `You've got your self a new password!\n\n\nThe password for the [OraGreen] account ${email} was just changed. If this was you, then you can safly ignore this message.`, // plain text body
         html: this.passwordChangedEmailTemlate(email), // html body
       });
 
@@ -109,6 +116,8 @@ export default class EmailService {
         },
       };
     } catch (err) {
+      console.log(err, "errva2");
+
       return {
         message:
           "Some thing went wrong while sending email verfication. try again!",
@@ -287,7 +296,7 @@ export default class EmailService {
                     </tr>
                     <tr>
                         <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <p style="margin: 0;">Cheers,<br>Petmark</p>
+                            <p style="margin: 0;">Cheers,<br>OraGreen</p>
                         </td>
                     </tr>
                 </table>
@@ -457,7 +466,7 @@ export default class EmailService {
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                     <tr>
                         <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <p style="margin: 0;">The password for the [Pet Mark] account ${email} was just changed. If this was you, then you can safly ignore this message.</p>
+                            <p style="margin: 0;">The password for the [OraGreen] account ${email} was just changed. If this was you, then you can safly ignore this message.</p>
                         </td>
                     </tr>
                     <tr>
@@ -493,7 +502,7 @@ export default class EmailService {
                     </tr>
                     <tr>
                         <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <p style="margin: 0;">Cheers,<br>Petmark</p>
+                            <p style="margin: 0;">Cheers,<br>OraGreen</p>
                         </td>
                     </tr>
                 </table>

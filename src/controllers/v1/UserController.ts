@@ -13,6 +13,35 @@ export default class UserController extends CRUDController<User, UserService> {
   path = "/app/user";
   routes: Array<IRoute> = [
     {
+      path: "/email-signup",
+      method: Methods.POST,
+      handler: this.emailSignup,
+      localMiddleware: [Token.verifyApiKey],
+      description: "Register user using email and password",
+    },
+    {
+      path: "/email-login",
+      method: Methods.POST,
+      handler: this.emailLogin,
+      localMiddleware: [Token.verifyApiKey],
+      description: "Login using email and password",
+    },
+    {
+      path: "/forgot-password",
+      method: Methods.POST,
+      handler: this.forgotPassword,
+      localMiddleware: [Token.verifyApiKey],
+      description: "Send OTP to email for password reset",
+    },
+    {
+      path: "/reset-password",
+      method: Methods.POST,
+      handler: this.resetPassword,
+      localMiddleware: [Token.verifyApiKey],
+      description: "Reset password using OTP",
+    },
+
+    {
       path: "/verify-phone-otp",
       method: Methods.POST,
       handler: this.verifyPhoneOTP,
@@ -28,7 +57,7 @@ export default class UserController extends CRUDController<User, UserService> {
       description: "register new user",
     },
     {
-      path: "/:id", 
+      path: "/:id",
       method: Methods.PUT,
       handler: this.updateUser,
       localMiddleware: [
@@ -132,6 +161,70 @@ export default class UserController extends CRUDController<User, UserService> {
       //super.sendSuccess(res, req.file, "Uploaded");
 
       const service = new UserService();
+    } catch (err: any) {
+      console.log(err);
+      super.sendError(res, err.message);
+    }
+  }
+
+  async emailSignup(req: Request, res: Response): Promise<void> {
+    try {
+      const service = new UserService();
+      const data = await service.registerWithEmail(req.body);
+
+      if (data.success) {
+        super.sendSuccess(res, data.data, data.message);
+      } else {
+        super.sendError(res, data.message);
+      }
+    } catch (err: any) {
+      console.log(err);
+      super.sendError(res, err.message);
+    }
+  }
+
+  async emailLogin(req: Request, res: Response): Promise<void> {
+    try {
+      const service = new UserService();
+      const data = await service.loginWithEmail(req.body);
+      console.log(data, "data");
+      if (data.success) {
+        super.sendSuccess(res, data.data, data.message);
+      } else {
+        super.sendError(res, data.message);
+      }
+    } catch (err: any) {
+      console.log(err);
+      super.sendError(res, err.message);
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const service = new UserService();
+      const data = await service.forgotPassword(req.body);
+
+      if (data.success) {
+        super.sendSuccess(res, null, data.message);
+      } else {
+        super.sendError(res, data.message);
+      }
+    } catch (err: any) {
+      console.log(err);
+      super.sendError(res, err.message);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const service = new UserService();
+      const data = await service.resetPassword(req.body);
+
+      if (data.success) {
+        super.sendSuccess(res, null, data.message);
+      } else {
+        super.sendError(res, data.message);
+      }
     } catch (err: any) {
       console.log(err);
       super.sendError(res, err.message);
