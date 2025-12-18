@@ -55,12 +55,10 @@ class AccessControlMiddleware {
         if (operands.length !== 2) {
           return next(new Error("must be two operands to check ownership"));
         }
-
         const firstOperand = req[operands[0].source][operands[0].key];
-
         const secondOperand = req[operands[1].source][operands[1].key];
 
-        if (firstOperand.toString() === secondOperand.toString()) {
+        if (firstOperand?.toString() === secondOperand?.toString()) {
           permission = permission[actions.own](resource);
         } else {
           permission = permission[actions.any](resource);
