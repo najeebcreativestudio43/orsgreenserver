@@ -161,6 +161,7 @@ let grantsObject = {
     user: {
       "read:own": ["*"],
       "update:own": ["*"],
+      "delete:own": ["*"], // ✅ users can delete their own account
     },
     address: {
       "read:own": ["*"],
