@@ -57,6 +57,32 @@ export default class UserController extends CRUDController<User, UserService> {
       description: "register new user",
     },
     {
+      path: "/delete-by-email",
+      method: Methods.DELETE,
+      handler: this.deleteUserByEmail,
+      localMiddleware: [
+        Token.verifyApiKey,
+        Token.verify,
+        AccessControlMiddleware.check({
+          resource: "user",
+          action: "delete",
+          checkOwnerShip: true,
+          operands: [
+            {
+              source: "user",
+              key: "email",
+            },
+            {
+              source: "body",
+              key: "email",
+            },
+          ],
+        }),
+      ],
+      description: "Delete user by email",
+    },
+
+    {
       path: "/:id",
       method: Methods.PUT,
       handler: this.updateUser,
@@ -219,6 +245,32 @@ export default class UserController extends CRUDController<User, UserService> {
     try {
       const service = new UserService();
       const data = await service.resetPassword(req.body);
+
+      if (data.success) {
+        super.sendSuccess(res, null, data.message);
+      } else {
+        super.sendError(res, data.message);
+      }
+    } catch (err: any) {
+      console.log(err);
+      super.sendError(res, err.message);
+    }
+  }
+
+  async deleteUserByEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return super.sendError(res, "Email is required") as any;
+      }
+
+      const service = new UserService();
+      const data = await service.deleteUserByEmail(email);
 
       if (data.success) {
         super.sendSuccess(res, null, data.message);

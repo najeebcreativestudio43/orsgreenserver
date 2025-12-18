@@ -289,6 +289,41 @@ export default class UserService extends BaseService<User> {
     }
   }
 
+  ////////
+  // ****??
+  public async deleteUserByEmail(email: string): Promise<IReturnData<null>> {
+    try {
+      const user = await UserModel.findOne({ email });
+
+      if (!user) {
+        return {
+          message: "User not found",
+          success: false,
+        };
+      }
+
+      // Delete user avatar if exists
+      if (user.avatar) {
+        FileUploadService.deleteFile(user.avatar);
+      }
+
+      // Delete the user
+      await UserModel.deleteOne({ email });
+
+      return {
+        message: "User deleted successfully",
+        success: true,
+        data: null,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        message: "An error occurred while deleting the user",
+        success: false,
+      };
+    }
+  }
+
   public async updateUserImage(req: Request): Promise<IReturnData<User>> {
     try {
       const { id } = req.params;
